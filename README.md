@@ -49,9 +49,6 @@ cd trades_r
 sodef_eval_transfer.ipynb
 ```
 
-[Checkpoint 1]() (put to trades_r/EXP/pre_train_model/)
-[Checkpoint 2]() (put to trades_r/EXP/nips_model/)
-
 
 ### Notification
 More test code and models will be uploaded soon after packing.
