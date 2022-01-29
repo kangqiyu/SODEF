@@ -66,7 +66,7 @@ Similar to the above section, we append SODEF after the pretrained model provide
 
 <div id="tab:r2_3">
 
-| Attack / Model |   Rebuffi2021    | Rebuffi2021 +SODEF | Transfer Attack |
+| Attack / Model |   Rebuffi2021    | [Rebuffi2021+SODEF](https://drive.google.com/file/d/1aaEPMXg1HI2rh-VZsBnjAFzg_Nh86ntp/view?usp=sharing) | Transfer Attack |
 |:--------------:|:-----:|:------:|:---------------:|
 |     Clean      | 92.23 |   93.73    |       NA        |  
 |   AutoAttack   | 66.58 |   __71.28__    |       __73.38__    | 
