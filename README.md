@@ -1,5 +1,5 @@
 # Stable Neural ODE with Lyapunov-Stable Equilibrium Points for Defending Against Adversarial Attacks
-
+  
 [Stable Neural ODE with Lyapunov-Stable Equilibrium Points for Defending Against Adversarial Attackss](https://openreview.net/forum?id=9CPc4EIr2t1).
 
 Qiyu Kang, Yang Song, Qinxu Ding, Wee Peng Tay
@@ -53,9 +53,39 @@ cd trades_r
 sodef_eval_transfer.ipynb
 ```
 
+#### In this section, we show compatibility of SODEF using [Rebuffi2021](https://github.com/deepmind/deepmind-research/tree/master/adversarial_robustness):
+
+
+Similar to the above section, we append SODEF after the pretrained model provided by the [RobustBench](https://github.com/RobustBench/robustbench) with keywords "Rebuffi2021Fixing_70_16_cutmix_extra". The weights are kept fixed during the training except the final FC layer. The pretrained model without SODEF achieves 66.58% accuracy under AutoAttack. We show that with SODEF, the robust accuracy could be improved to over 70%:
+
+
+<span id="tab:r2_3" label="tab:r2_3"></span>
+
+<div id="tab:r2_3">
+
+| Attack / Model |   Rebuffi2021    | Rebuffi2021 +SODEF | Transfer Attack |
+|:--------------:|:-----:|:------:|:---------------:|
+|     Clean      | 92.23 |   93.73    |       NA        |  
+|   AutoAttack   | 66.58 |   __71.28__    |       ?      | 
+
+Tab 2. Classification accuracy (%) using (w/ and w/o SODEF) under AutoAttack on
+adversarial CIFAR10 examples with ℒ<sub>∞</sub> norm (*ϵ* = 8/255).
+
+</div>
+
+Here again for the transfer attack, adv examples are generated from original pretrained model using AA ℒ<sub>∞</sub> (*ϵ* = 8/255) attacks.
+
+
+```python
+cd Rebuffi2021Fixing_70_16_cutmix_extra
+python sodef_eval_ode.py
+```
+```python
+cd Rebuffi2021Fixing_70_16_cutmix_extra
+sodef_eval_transfer.ipynb
+```
 
 ### Notification
 More test code and models will be uploaded soon after packing.
 
 We currenly only upload the test code for SODEF. Please understand we have strict protocols for code release as this research is partially funded by corporate funding. We will upload the training code as soon as permission is granted.
-
