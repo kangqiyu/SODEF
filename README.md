@@ -89,6 +89,6 @@ python sodef_eval_transfer.py or sodef_eval_transfer.ipynb
 ```
 
 ### Notification
-More test code and models will be uploaded soon after packing.
+It seems git lfs is not working very well. The checkpoints can also be found [here](https://drive.google.com/drive/folders/1i7Cj-dvY-7LJWNKACsJDQZmyKiAlCEI9?usp=sharing). More test code and models will be uploaded soon after packing.
 
 We currenly only upload the test code for SODEF. Please understand we have strict protocols for code release as this research is partially funded by corporate funding. We will upload the training code as soon as permission is granted.
