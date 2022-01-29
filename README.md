@@ -12,12 +12,15 @@ Qiyu Kang, Yang Song, Qinxu Ding, Wee Peng Tay
 - Python: >=3.6
 - PyTorch: >= 1.6.0
 - Torchvision: >= 0.7.0
+- pip install git+https://github.com/Lezcano/geotorch.git@0.2.0
+- pip install torchdiffeq
+- pip install git+https://github.com/RobustBench/robustbench.git
 
 ## Empirical Evaluations
 
-### Compatibility of SODEF
+### Compatibility of SODEF:
 
-#### In this section, we show compatibility of SODEF using [TRADES](https://github.com/P2333/Bag-of-Tricks-for-AT/):
+### In this section, we show compatibility of SODEF using [TRADES](https://github.com/P2333/Bag-of-Tricks-for-AT/):
 
 We append our SODEF after TRADES net to improve the model robustness against adversarial attacks. TRADES works as the feature extractor <img src="https://render.githubusercontent.com/render/math?math=h_{\boldsymbol{\phi}}"> as in our paper. Please note TRADES weights are kept fixed during the training. We use the pretrained model provided by [TRADES Repo](https://github.com/P2333/Bag-of-Tricks-for-AT/).
 
@@ -53,7 +56,7 @@ cd trades_r
 sodef_eval_transfer.ipynb
 ```
 
-#### In this section, we show compatibility of SODEF using [Rebuffi2021](https://github.com/deepmind/deepmind-research/tree/master/adversarial_robustness):
+### In this section, we show compatibility of SODEF using [Rebuffi2021](https://github.com/deepmind/deepmind-research/tree/master/adversarial_robustness):
 
 
 Similar to the above section, we append SODEF after the pretrained model provided by the [RobustBench](https://github.com/RobustBench/robustbench) with keywords "Rebuffi2021Fixing_70_16_cutmix_extra". The weights are kept fixed during the training except the final FC layer. The pretrained model without SODEF achieves 66.58% accuracy under AutoAttack. We show that with SODEF, the robust accuracy could be improved to over 70%:
@@ -66,14 +69,14 @@ Similar to the above section, we append SODEF after the pretrained model provide
 | Attack / Model |   Rebuffi2021    | Rebuffi2021 +SODEF | Transfer Attack |
 |:--------------:|:-----:|:------:|:---------------:|
 |     Clean      | 92.23 |   93.73    |       NA        |  
-|   AutoAttack   | 66.58 |   __71.28__    |       ?      | 
+|   AutoAttack   | 66.58 |   __71.28__    |       __73.38__    | 
 
 Tab 2. Classification accuracy (%) using (w/ and w/o SODEF) under AutoAttack on
 adversarial CIFAR10 examples with ℒ<sub>∞</sub> norm (*ϵ* = 8/255).
 
 </div>
 
-Here again for the transfer attack, adv examples are generated from original pretrained model using AA ℒ<sub>∞</sub> (*ϵ* = 8/255) attacks.
+Here again for the transfer attack, adv examples are generated from original pretrained model using AA ℒ<sub>∞</sub> (*ϵ* = 8/255) attacks. We will report results under each individual attack as in Tab 1. soon. 
 
 
 ```python
@@ -82,7 +85,7 @@ python sodef_eval_ode.py
 ```
 ```python
 cd Rebuffi2021Fixing_70_16_cutmix_extra
-sodef_eval_transfer.ipynb
+python sodef_eval_transfer.py or sodef_eval_transfer.ipynb
 ```
 
 ### Notification

@@ -25,3 +25,4 @@ cifar-data/cifar-10-batches-py/data_batch_4
 cifar-data/cifar-10-batches-py/test_batch
 cifar-data/cifar-10-batches-py/data_batch_2
 cifar-data/cifar-10-python.tar.gz
+*/models/*
