@@ -5,7 +5,7 @@ import os
 import sys
 sys.stdout.flush()
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID" 
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import time
 import torch.optim as optim
 import numpy as np
@@ -22,7 +22,8 @@ from utils_plus import get_loaders
 device = torch.device('cuda:0') 
 
 
-saved_temp = torch.load('./EXP/CIFAR10_resnet_Nov_1/full.pth')
+# saved_temp = torch.load('./EXP/CIFAR10_resnet_Nov_1/full.pth')
+saved_temp = torch.load('./EXP/full.pth')
 statedic_temp = saved_temp['state_dict']
 
 
@@ -96,7 +97,7 @@ adversary = AutoAttack(new_model, norm='Linf', eps=epsilon, version='standard')
 
 
 
-X_adv = adversary.run_standard_evaluation(x_test, y_test, bs=64)
+X_adv = adversary.run_standard_evaluation(x_test, y_test, bs=4)
 # 
 # X_adv = adversary.run_standard_evaluation_individual(x_test, y_test, bs=64)
 

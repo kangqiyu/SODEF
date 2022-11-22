@@ -620,9 +620,9 @@ for epoch in range(0, ODE_FC_fc_epoch):
     
     with torch.no_grad():
         val_acc = accuracy(new_model_full, testloader)
-        if val_acc > best_acc:
-            torch.save({'state_dict': new_model_full.state_dict()}, os.path.join(ODE_FC_save_folder, 'full.pth'))
-            best_acc = val_acc
+#         if val_acc > best_acc:
+#             torch.save({'state_dict': new_model_full.state_dict()}, os.path.join(ODE_FC_save_folder, 'full.pth'))
+#             best_acc = val_acc
         print("Epoch {:04d} |  Test Acc {:.4f}".format(epoch,  val_acc))
         
         

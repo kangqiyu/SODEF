@@ -7,6 +7,7 @@ from torch.nn.parameter import Parameter
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 class Identity(nn.Module):
     def __init__(self):
         super(Identity, self).__init__()
@@ -14,7 +15,6 @@ class Identity(nn.Module):
     def forward(self, x):
         return x
     
-from torchdiffeq import odeint_adjoint as odeint
 
 
 class ConcatFC(nn.Module):
@@ -26,7 +26,7 @@ class ConcatFC(nn.Module):
         return self._layer(x)
 
 
-class ODEfunc_mlp(nn.Module): #resnet4/dense1
+class ODEfunc_mlp(nn.Module): 
 
     def __init__(self, dim):
         super(ODEfunc_mlp, self).__init__()
@@ -41,6 +41,10 @@ class ODEfunc_mlp(nn.Module): #resnet4/dense1
         return out
 
 
+
+
+
+from torchdiffeq import odeint_adjoint as odeint
 class ODEBlock(nn.Module):
 
     def __init__(self, odefunc):
@@ -59,9 +63,29 @@ class ODEBlock(nn.Module):
 
     @nfe.setter
     def nfe(self, value):
+        self.odefunc.nfe = value        
+        
+        
+
+class ODEBlocktemp(nn.Module):  ####  note here we do not integrate to save time
+
+    def __init__(self, odefunc):
+        super(ODEBlocktemp, self).__init__()
+        self.odefunc = odefunc
+        self.integration_time = torch.tensor([0, 5]).float()
+
+    def forward(self, x):
+        out = self.odefunc(0, x)
+        return out
+
+    @property
+    def nfe(self):
+        return self.odefunc.nfe
+
+    @nfe.setter
+    def nfe(self, value):
         self.odefunc.nfe = value
-
-
+        
 
 class MLP_OUT_ORTH1024(nn.Module):
     def __init__(self):
@@ -121,8 +145,30 @@ class MLP_OUT_LINEAR(nn.Module):
     def forward(self, input_):
         h1 = self.fc0(input_)
         return h1
+
+
+
     
-    
+fc_max = './EXP/fc_maxrowdistance_64_10/ckpt.pth'
+saved_temp = torch.load(fc_max)
+matrix_temp = saved_temp['matrix']
+print(matrix_temp.shape)
+
+
+class MLP_OUT_BALL(nn.Module):
+    def __init__(self):
+        super(MLP_OUT_BALL, self).__init__()
+        self.fc0 = nn.Linear(64, 10, bias=False)
+        self.fc0.weight.data = matrix_temp
+    def forward(self, input_):
+        h1 = self.fc0(input_)
+        return h1  
+        
+
+        
+
+
+
     
     
     
