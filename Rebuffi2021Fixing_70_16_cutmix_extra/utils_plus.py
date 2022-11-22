@@ -1,4 +1,3 @@
-#import apex.amp as amp
 import torch
 import torch.nn.functional as F
 from torchvision import datasets, transforms
@@ -139,3 +138,6 @@ def evaluate_standard(test_loader, model):
             test_acc += (output.max(1)[1] == y).sum().item()
             n += y.size(0)
     return test_loss/n, test_acc/n
+
+
+
