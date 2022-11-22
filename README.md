@@ -1,6 +1,6 @@
 # Stable Neural ODE with Lyapunov-Stable Equilibrium Points for Defending Against Adversarial Attacks
   
-[Stable Neural ODE with Lyapunov-Stable Equilibrium Points for Defending Against Adversarial Attackss](https://openreview.net/forum?id=9CPc4EIr2t1).
+[Stable Neural ODE with Lyapunov-Stable Equilibrium Points for Defending Against Adversarial Attacks](https://openreview.net/forum?id=9CPc4EIr2t1).
 
 Qiyu Kang, Yang Song, Qinxu Ding, Wee Peng Tay
 
