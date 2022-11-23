@@ -97,7 +97,7 @@ adversary = AutoAttack(new_model, norm='Linf', eps=epsilon, version='standard')
 
 
 
-X_adv = adversary.run_standard_evaluation(x_test, y_test, bs=4)
+X_adv = adversary.run_standard_evaluation(x_test, y_test, bs=128)
 # 
 # X_adv = adversary.run_standard_evaluation_individual(x_test, y_test, bs=64)
 
