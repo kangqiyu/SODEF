@@ -504,9 +504,7 @@ new_model_full = nn.Sequential(robust_backbone, robust_backbone_fc_features, ODE
 # new_model_full.load_state_dict(statedic_temp)
 
 
-# optimizer = torch.optim.Adam(new_model_full.parameters(), lr=1e-1, eps=1e-2, amsgrad=True)
-
-optimizer = torch.optim.Adam([{'params': odefunc.parameters(), 'lr': 1e-3, 'eps':1e-4,},
+optimizer = torch.optim.Adam([{'params': odefunc.parameters(), 'lr': 1e-5, 'eps':1e-6,},
                             {'params': fc_layers.parameters(), 'lr': 1e-2, 'eps':1e-4,}], amsgrad=True)
 
 

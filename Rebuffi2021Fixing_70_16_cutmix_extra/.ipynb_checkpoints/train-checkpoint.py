@@ -24,6 +24,8 @@ from utils import *
 from utils_plus import (upper_limit, lower_limit, std, clamp, get_loaders,
     attack_pgd, evaluate_pgd, evaluate_standard, normalize)
 
+from torchdiffeq import odeint_adjoint as odeint
+
 
 device = torch.device('cuda:0') 
 
@@ -33,7 +35,6 @@ robust_feature_savefolder = './EXP/CIFAR10_resnet_Nov_1'
 train_savepath='./data/CIFAR10_train_resnetNov1.npz'
 test_savepath='./data/CIFAR10_test_resnetNov1.npz'
     
-# ODE_FC_save_folder = './EXP/CIFAR10_resnet_Nov_1'
 ODE_FC_save_folder = robust_feature_savefolder
 
 
@@ -111,7 +112,7 @@ def save_testing_feature(model, dataset_loader):
     
 
 args = get_args()
-nepochs_save_robustfeature = 5
+nepochs_save_robustfeature = 4
 batches_per_epoch = 128
 
 np.random.seed(args.seed)
@@ -264,6 +265,24 @@ ODE_FC_ode_epoch = 20
 
 
 
+class ODEBlocktemp(nn.Module):  ####  note here we do not integrate to save time
+
+    def __init__(self, odefunc):
+        super(ODEBlocktemp, self).__init__()
+        self.odefunc = odefunc
+        self.integration_time = torch.tensor([0, 5]).float()
+
+    def forward(self, x):
+        out = self.odefunc(0, x)
+        return out
+
+    @property
+    def nfe(self):
+        return self.odefunc.nfe
+
+    @nfe.setter
+    def nfe(self, value):
+        self.odefunc.nfe = value
 
 def df_dz_regularizer(f, z):
 #     print("+++++++++++")
@@ -440,6 +459,25 @@ ODE_FC_fcbatch = 128
 ODE_FC_fc_epoch = 10
 
 
+class ODEBlock(nn.Module):
+
+    def __init__(self, odefunc):
+        super(ODEBlock, self).__init__()
+        self.odefunc = odefunc
+        self.integration_time = torch.tensor([0, 5]).float()
+
+    def forward(self, x):
+        self.integration_time = self.integration_time.type_as(x)
+        out = odeint(self.odefunc, x, self.integration_time, rtol=1e-3, atol=1e-3)
+        return out[1]
+
+    @property
+    def nfe(self):
+        return self.odefunc.nfe
+
+    @nfe.setter
+    def nfe(self, value):
+        self.odefunc.nfe = value    
 
 
 feature_layers = ODEBlock(odefunc)
@@ -453,7 +491,7 @@ ODE_FCmodel = nn.Sequential(feature_layers, fc_layers).to(device)
 # ODE_FCmodel.load_state_dict(statedic)
 
 for param in odefunc.parameters():
-    param.requires_grad = False
+    param.requires_grad = True
 for param in robust_backbone_fc_features.parameters():
     param.requires_grad = False
 for param in robust_backbone.parameters():
@@ -466,10 +504,8 @@ new_model_full = nn.Sequential(robust_backbone, robust_backbone_fc_features, ODE
 # new_model_full.load_state_dict(statedic_temp)
 
 
-optimizer = torch.optim.Adam(new_model_full.parameters(), lr=1e-2, eps=1e-4, amsgrad=True)
-
-# optimizer = torch.optim.Adam([{'params': odefunc.parameters(), 'lr': 1e-4, 'eps':1e-5,},
-#                             {'params': fc_layers.parameters(), 'lr': 1e-2, 'eps':1e-3,}], amsgrad=True)
+optimizer = torch.optim.Adam([{'params': odefunc.parameters(), 'lr': 1e-5, 'eps':1e-6,},
+                            {'params': fc_layers.parameters(), 'lr': 1e-2, 'eps':1e-4,}], amsgrad=True)
 
 
 criterion = nn.CrossEntropyLoss()
@@ -544,9 +580,6 @@ def train(net, epoch):
 
 
     
-
-
-    
     
 use_cuda = True    
 alpha = 1.0
@@ -615,28 +648,28 @@ best_acc = 0
 
 for epoch in range(0, ODE_FC_fc_epoch):
     
-    train(new_model_full, epoch)
-#     train_mixup(new_model_full, epoch)
+    # train(new_model_full, epoch)
+    train_mixup(new_model_full, epoch)
     
     with torch.no_grad():
         val_acc = accuracy(new_model_full, testloader)
-#         if val_acc > best_acc:
-#             torch.save({'state_dict': new_model_full.state_dict()}, os.path.join(ODE_FC_save_folder, 'full.pth'))
-#             best_acc = val_acc
+        if val_acc > best_acc:
+            torch.save({'state_dict': new_model_full.state_dict()}, os.path.join(ODE_FC_save_folder, 'full.pth'))
+            best_acc = val_acc
         print("Epoch {:04d} |  Test Acc {:.4f}".format(epoch,  val_acc))
         
         
         
     # break
     
-torch.save({'state_dict': new_model_full.state_dict()}, os.path.join(ODE_FC_save_folder, 'full.pth'))    
+    
+    
 # saved_temp = torch.load(os.path.join(ODE_FC_save_folder, 'full.pth'))
 # statedic_temp = saved_temp['state_dict']
 # new_model_full.load_state_dict(statedic_temp)
 
 
 ################################################ attack ################################################   
-testloader = testloader
 
 l = [x for (x, y) in testloader]
 x_test = torch.cat(l, 0)
@@ -647,7 +680,7 @@ y_test = torch.cat(l, 0)
 ##### here we split the set to multi servers and gpus to speed up the test. otherwise it is too slow.
 ##### if your server is powerful or your have enough time, just use the full dataset directly by commenting out the following.
 #############################################    
-iii = 0
+iii = 9
 
 x_test = x_test[1000*iii:1000*(iii+1),...]
 y_test = y_test[1000*iii:1000*(iii+1),...]
@@ -665,3 +698,4 @@ adversary = AutoAttack(new_model_full, norm='Linf', eps=epsilon, version='standa
 
 
 X_adv = adversary.run_standard_evaluation(x_test, y_test, bs=128)
+torch.save({'state_dict': new_model_full.state_dict()}, os.path.join(ODE_FC_save_folder, 'full.pth'))
