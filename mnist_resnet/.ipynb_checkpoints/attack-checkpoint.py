@@ -34,16 +34,24 @@ timescale = 1
 layernum = 0
 fc_dim = 64
 
-folder_savemodel = './EXP/MNIST_resnet0'
-folder = './EXP/final_version/model.pth'
+# folder_savemodel = './EXP/MNIST_resnet0'
+folder_savemodel = './EXP/MNIST_resnet_final'
+
+
+folder = './EXP/resnetfct5_15/model.pth'
+# folder = './EXP/resnetfc20_relu_final/model.pth'
+
 
 act = torch.sin 
+# act2 = torch.nn.functional.relu
 saved = torch.load(folder)
 print(folder)
 
 statedic = saved['state_dict']
 args = saved['args']
 args.tol = 1e-5
+
+f_coeffi = -1
 
 from torchdiffeq import odeint_adjoint as odeint
 # Step 0: Define the neural network model, return logits instead of activation in forward method
@@ -55,10 +63,73 @@ class ConcatFC(nn.Module):
 #
     def forward(self, t, x):
         return self._layer(x)
+# class ODEfunc_mlp(nn.Module):
 
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 2*fc_dim)
+#         self.act1 = act2
+#         self.fc2 = ConcatFC(2*fc_dim, 4*fc_dim)
+#         self.act2 = act2
+#         self.fc3 = ConcatFC(4*fc_dim, fc_dim)
+#         self.act3 = act2
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+#         out = self.act1(out)
+#         out = f_coeffi*self.fc2(t, out)
+#         out = self.act2(out)
+#         out = f_coeffi*self.fc3(t, out)
+#         out = self.act3(out)
+#         return out 
+
+# class ODEfunc_mlp(nn.Module):
+
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 512)
+#         self.act1 = act
+#         self.fc2 = ConcatFC(512, 512)
+#         self.act2 = act
+#         self.fc3 = ConcatFC(512, fc_dim)
+#         self.act3 = act
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+#         out = self.act1(out)
+#         out = f_coeffi*self.fc2(t, out)
+#         out = self.act2(out)
+#         out = f_coeffi*self.fc3(t, out)
+#         out = self.act3(out)
+#         return out
+# class ODEfunc_mlp(nn.Module): #dense_resnet_relu0
+
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 2*fc_dim)
+#         self.act1 = act2
+#         self.fc2 = ConcatFC(2*fc_dim, 4*fc_dim)
+#         self.act2 = act2
+#         self.fc3 = ConcatFC(4*fc_dim, fc_dim)
+#         self.act3 = act
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+# #         out = self.act1(out)
+#         out = f_coeffi*self.fc2(t, out)
+# #         out = self.act2(out)
+#         out = f_coeffi*self.fc3(t, out)
+#         out = self.act3(out)
+#         return out 
     
     
-class ODEfunc_mlp(nn.Module): 
+class ODEfunc_mlp(nn.Module): #dense_resnet_relu1,2,7
 
     def __init__(self, dim):
         super(ODEfunc_mlp, self).__init__()
@@ -68,12 +139,122 @@ class ODEfunc_mlp(nn.Module):
 
     def forward(self, t, x):
         self.nfe += 1
-        out = -1*self.fc1(t, x)
+        out = f_coeffi*self.fc1(t, x)
         out = self.act1(out)
         return out 
 
 
+# class ODEfunc_mlp(nn.Module): #dense_resnet_relu3
 
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 8*fc_dim)
+#         self.act1 = act
+#         self.fc2 = ConcatFC(8*fc_dim, fc_dim)
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+#         out = self.act1(out)
+#         out = self.fc2(t, out)
+#         return out 
+# class ODEfunc_mlp(nn.Module): #dense_resnet_relu4,6
+
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 16*fc_dim)
+#         self.act1 = act
+#         self.fc2 = ConcatFC(16*fc_dim, fc_dim)
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+#         out = self.act1(out)
+#         out = self.fc2(t, out)
+#         return out 
+# class ODEfunc_mlp(nn.Module): #dense_resnet_relu5
+
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 2048)
+#         self.act1 = act
+#         self.fc2 = ConcatFC(2048, fc_dim)
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+#         out = self.act1(out)
+#         out = self.fc2(t, out)
+#         return out    
+
+
+# class ODEfunc_mlp(nn.Module): #8
+
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 32)
+#         self.act1 = act
+#         self.fc2 = ConcatFC(32, fc_dim)
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+#         out = self.act1(out)
+#         out = self.fc2(t, out)
+#         return out   
+
+# class ODEfunc_mlp(nn.Module): #9
+
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 8)
+#         self.act1 = act
+#         self.fc2 = ConcatFC(8, fc_dim)
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+#         out = self.act1(out)
+#         out = self.fc2(t, out)
+#         return out    
+
+# class ODEfunc_mlp(nn.Module): #9,10
+
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 8)
+#         self.act1 = act
+#         self.fc2 = ConcatFC(8, fc_dim)
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = f_coeffi*self.fc1(t, x)
+#         out = self.act1(out)
+#         out = self.fc2(t, out)
+#         return out        
+# class ODEfunc_mlp(nn.Module): #dense_resnet_relu11
+
+#     def __init__(self, dim):
+#         super(ODEfunc_mlp, self).__init__()
+#         self.fc1 = ConcatFC(fc_dim, 4*fc_dim)
+#         self.act1 = torch.tanh
+#         self.fc2 = ConcatFC(4*fc_dim, fc_dim)
+#         self.act2 = torch.sin 
+#         self.nfe = 0
+
+#     def forward(self, t, x):
+#         self.nfe += 1
+#         out = self.fc1(t, x)
+#         out = self.act1(out)
+#         out = f_coeffi*self.fc2(t, out)
+#         out = self.act2(out)
+#         return out      
 class ODEBlock(nn.Module):
 
     def __init__(self, odefunc):
@@ -122,7 +303,16 @@ class RunningAverageMeter(object):
             self.avg = self.avg * self.momentum + val * (1 - self.momentum)
         self.val = val
 
+# class MLP_IN(nn.Module):
 
+#     def __init__(self):
+#         super(MLP_IN, self).__init__()
+#         self.fc0 = nn.Linear(784, fc_dim)
+
+#     def forward(self, input_):
+#         input_ =  input_.view(-1,784)
+#         h1 = F.relu(self.fc0(input_))
+#         return h1
 class newLinear(nn.Module):
     def __init__(self, in_features, out_features, bias=True):
         super(newLinear, self).__init__()
@@ -284,10 +474,13 @@ class fcs(nn.Module):
         self.dropout = 0.1
         self.merge_net = nn.Sequential(nn.Linear(in_features=512,
                                                  out_features=2048),
+#                                        nn.ReLU(),
                                        nn.Tanh(),
+#                                        nn.Dropout(p=dropout),
                                        nn.Linear(in_features=2048,
                                                  out_features=fc_dim),
                                        nn.Tanh(),
+#                                        nn.Sigmoid(),
                                        )
 
         
@@ -323,7 +516,7 @@ model_fea.load_state_dict(statedic_temp)
 odefunc = ODEfunc_mlp(0)
 feature_layers = [ODEBlock(odefunc)] 
 fc_layers = [MLP_OUT_final()]
-model_dense = nn.Sequential(*feature_layers, *fc_layers).to(device)
+model_dense = nn.Sequential( *feature_layers, *fc_layers).to(device)
 statedic = saved['state_dict']
 model_dense.load_state_dict(statedic)
 
@@ -336,9 +529,12 @@ class tempnn(nn.Module):
         return h1
 tempnn_ = tempnn()
 model = nn.Sequential(*net, tempnn_,fcs_temp,  *model_dense).to(device)
+# model = nn.Sequential(*net, tempnn_,fcs_temp,  fc_layersa).to(device)
 
+model.eval()
 print(model)
 
+# Step 2a: Define the loss function and the optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
@@ -381,6 +577,18 @@ def accuracy_clean(classifier, dataset_loader):
         total_correct += np.sum(predicted_class == target_class)
     return total_correct / len(dataset_loader.dataset)
 
+def accuracy_CW(classifier, dataset_loader):
+    attack = CarliniL2Method(classifier, confidence=1, max_iter=100)
+    total_correct = 0
+    for x, y in dataset_loader:
+#         x = x.to(device)
+        x = attack.generate(x=x)
+        predictions = classifier.predict(x)
+        y = one_hot(np.array(y.numpy()), 10)
+        target_class = np.argmax(y, axis=1)
+        predicted_class = np.argmax(predictions, axis=1)
+        total_correct += np.sum(predicted_class == target_class)
+    return total_correct / len(dataset_loader.dataset)
 
 def accuracy_FGSM(classifier, dataset_loader):
     attack = FastGradientMethod(estimator=classifier, eps=0.3)
@@ -395,9 +603,33 @@ def accuracy_FGSM(classifier, dataset_loader):
         total_correct += np.sum(predicted_class == target_class)
     return total_correct / len(dataset_loader.dataset)
 
-
+# def accuracy_FGSM(classifier, dataset_loader):
+#     attack = FastGradientMethod(estimator=classifier, eps=0.3)
+#     total_correct = 0
+#     error=0
+#     corr = 0
+#     for x, y in dataset_loader:
+# #         x = x.to(device)
+#         try:
+#             x = attack.generate(x=x)
+#             predictions = classifier.predict(x)
+#             y = one_hot(np.array(y.numpy()), 10)
+#             target_class = np.argmax(y, axis=1)
+#             predicted_class = np.argmax(predictions, axis=1)
+#             total_correct += np.sum(predicted_class == target_class)
+#             corr = corr+1
+#         except:
+#             error=error+1
+#             continue
+#     print('num err: ', error)
+#     print('actual acc: ', total_correct/corr)
+#     return total_correct / len(dataset_loader.dataset)
 
 print('********************')
+# for i in range(100):
+#     print(torch.min(testset.__getitem__(i)[0]))
+#     print(torch.max(testset.__getitem__(i)[0]))
+# print(torch.max(testset[0]))
 print(folder, ' time: ', endtime)
 
 class mnist_samples(Dataset):
@@ -406,12 +638,17 @@ class mnist_samples(Dataset):
         self.len = leng
         self.iid = iid
     def __len__(self):
+#             return 425
             return self.len
+
     def __getitem__(self, idx):
         x,y = self.dataset[idx+self.len*self.iid]
         return x,y
 test_samples = mnist_samples(testset,1000,7)
+# test_loader_samples = DataLoader(test_samples, batch_size=1, shuffle=False, num_workers=2, drop_last=False)
 test_loader_samples = DataLoader(test_samples, batch_size=100, shuffle=False, num_workers=2, drop_last=False)
+
+# Step 7: Evaluate the ART classifier on adversarial test examples
 
 
 accuracy_clean = accuracy_clean(classifier, testloader)
@@ -420,5 +657,24 @@ print("Accuracy on benign test examples: {}%".format(accuracy_clean * 100))
 accuracy = accuracy_FGSM(classifier, test_loader_samples)
 print("Accuracy on adversarial test examples: {}%".format(accuracy * 100))
 
+# accuracy = accuracy_CW(classifier, testloader)
+# print("Accuracy on adversarial test examples: {}%".format(accuracy * 100))
+
+
 accuracy = accuracy_PGD(classifier, testloader)
 print("Accuracy on adversarial test examples: {}%".format(accuracy * 100))
+
+# from robustbench.data import _load_dataset
+
+# # from robustbench.data import load_cifar10
+# epsilon = 0.3
+# batch_size = 50
+
+# # x_test, y_test = load_cifar10(n_examples=500)
+# x_test, y_test = _load_dataset(testset,50)
+
+
+# from autoattack import AutoAttack
+# adversary = AutoAttack(model, norm='Linf', eps=epsilon, version='standard')
+
+# x_adv = adversary.run_standard_evaluation(x_test, y_test, bs=batch_size)

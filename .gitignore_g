@@ -16,4 +16,4 @@
 *.gz
 robustbench/
 *.log
-
+mnist_resnet/EXP/*

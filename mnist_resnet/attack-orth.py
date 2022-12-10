@@ -21,6 +21,7 @@ from art.attacks.evasion import FastGradientMethod, ProjectedGradientDescent, Ca
 from art.estimators.classification import PyTorchClassifier
 from art.utils import load_mnist
 from models import *
+from model import *
 
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID" 
@@ -35,10 +36,10 @@ layernum = 0
 fc_dim = 64
 
 # folder_savemodel = './EXP/MNIST_resnet0'
-folder_savemodel = './EXP/MNIST_resnet_final'
+folder_savemodel = './EXP/orth_MNIST_resnet_final'
 
 
-folder = './EXP/resnetfct5_15/model.pth'
+folder = './EXP/orth_resnetfct5_15/model.pth'
 # folder = './EXP/resnetfc20_relu_final/model.pth'
 
 
@@ -500,7 +501,8 @@ net = net.to(device)
 net = nn.Sequential(*list(net.children())[0:-1])
 
 #     print(model)
-fcs_temp = fcs()
+# fcs_temp = fcs()
+fcs_temp = MLP_OUT_ORTH512()
 
 # fc_layersa = nn.Linear(fc_dim, 10,  bias=True)
 # fc_layersa = MLP_OUT_ORT()
